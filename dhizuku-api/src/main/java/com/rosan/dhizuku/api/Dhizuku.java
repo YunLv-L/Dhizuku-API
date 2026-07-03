@@ -103,10 +103,13 @@ public class Dhizuku {
         if (iBinder == null) return false;
         remote = IDhizuku.Stub.asInterface(iBinder);
         try {
-            iBinder.linkToDeath(() -> {
-                IDhizuku current = remote;
-                if (current == null || current.asBinder() != iBinder) return;
-                remote = null;
+            iBinder.linkToDeath(new IBinder.DeathRecipient() {
+                @Override
+                public void binderDied() {
+                    IDhizuku current = remote;
+                    if (current == null || current.asBinder() != iBinder) return;
+                    remote = null;
+                }
             }, 0);
         } catch (RemoteException e) {
             //noinspection CallToPrintStackTrace
